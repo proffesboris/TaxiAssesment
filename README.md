@@ -19,8 +19,8 @@ bash run_ingestion.sh 2023-01 2023-10
 
 #### Where see results:
 
-- Ingested data appears in project folder
-core/temp/data
+- Ingested data appears in project folder:
+"core/temp/data"
 
-- Data after spark transformations appears in  project folder
-result
+- Data after spark transformations appears in  project folder:
+"result"
