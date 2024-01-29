@@ -5,7 +5,7 @@
 
 #### For mac/linux, you should choose one of option: 
 
-- Run with default date: 2023-01
+- Run with default date 2023-01: 
 bash run_ingestion.sh
 
 -  Run for one date: 
