@@ -11,7 +11,6 @@
 ### for example :
 ### bash run_ingestion.sh 2023-01
 
-
 ### -  Run for one range of dates: 
 ### for example :
 ### bash run_ingestion.sh 2023-01 2023-10
