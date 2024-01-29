@@ -1,48 +1,27 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.types import StructType, StructField, IntegerType, StringType, FloatType, DoubleType, LongType, TimestampNTZType
-from pyspark.sql.functions import col
-import os
-
-def sum(arg):
-    total = 0
-    for val in arg:
-        total += val
-    return total
-
 
 class TransformData:
 
-    def set_schema(self):
+    def __init__(self, data_path=None):
+        self.data_path = data_path
 
-        return StructType([
-            StructField("VendorID", LongType(), True),
-            StructField("tpep_pickup_datetime", TimestampNTZType(), True),
-            StructField("tpep_dropoff_datetime", TimestampNTZType(), True),
-            StructField("passenger_count", DoubleType(), True),
-            StructField("trip_distance", DoubleType(), True),
-            StructField("RatecodeID", DoubleType(), True),
-            StructField("store_and_fwd_flag", StringType(), True),
-            StructField("PULocationID", LongType(), True),
-            StructField("DOLocationID", LongType(), True),
-            StructField("payment_type", LongType(), True),
-            StructField("fare_amount", DoubleType(), True),
-            StructField("extra", DoubleType(), True),
-            StructField("mta_tax", DoubleType(), True),
-            StructField("tip_amount", DoubleType(), True),
-            StructField("tolls_amount", DoubleType(), True),
-            StructField("improvement_surcharge", DoubleType(), True),
-            StructField("total_amount", DoubleType(), True),
-            StructField("congestion_surcharge", DoubleType(), True),
-            StructField("airport_fee", DoubleType(), True)
-        ])
-
-    def merge_frames(self, sc):
-
-        import glob
+    def __path_for_read(self):
 
         import os
 
-        root_path = os.path.join('core', 'temp', 'data')
+
+        if self.data_path is None:
+            path_for_read_files = os.path.join('core', 'temp', 'data')
+        else:
+            path_for_read_files = self.data_path
+
+        return path_for_read_files
+
+
+
+    def __merge_frames(self, sc, root_path):
+
+        import glob
 
         files = glob.glob(f"{root_path}/*")
 
@@ -60,7 +39,7 @@ class TransformData:
         return unionAll(*list_of_frames)
 
 
-    def make_spark_context(self):
+    def __make_spark_context(self):
 
         spark = SparkSession.builder.master("local[*]").appName("Transform taxi data").getOrCreate()
 
@@ -69,7 +48,7 @@ class TransformData:
         return spark
 
 
-    def read_data(self):
+    def __read_data(self):
 
         import os
         if len(os.listdir(os.path.join('core', 'temp', 'data'))) == 0:
@@ -82,7 +61,7 @@ class TransformData:
             print("\n------transform data in spark----------\n")
             print("-------------------------------------------")
 
-            return self.merge_frames(sc=self.make_spark_context())
+        return self.__merge_frames(sc=self.__make_spark_context(), root_path=self.__path_for_read())
 
 
     def enrich_data(self):
@@ -92,7 +71,7 @@ class TransformData:
 
         from pyspark.sql.functions import when
 
-        df = self.read_data()
+        df = self.__read_data()
 
         return df.withColumn("total_amount", when(df["total_amount"] < 0, 0).otherwise(df["total_amount"]))
 
@@ -106,8 +85,6 @@ class TransformData:
 
         from pyspark.sql.window import Window
         from pyspark.sql.functions import percent_rank, col
-
-        # print(df.select("trip_distance").rdd.max()[0])
 
         window = Window.partitionBy().orderBy(df['trip_distance'].desc())
 

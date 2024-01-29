@@ -10,21 +10,21 @@ class GetData:
         self.dates = dates
 
 
-    def build_directory(self):
+    def __build_directory(self):
 
         import os
 
         return os.path.join('core', 'temp', 'data')
 
-    def build_url(self, date):
+    def __build_url(self, date):
 
         print(f"{self.url_path}/{self.file_pattern}_{date}.{self.format}".replace('"',''))
 
         return f"{self.url_path}/{self.file_pattern}_{date}.{self.format}".replace('"','')
 
-    def save_date(self, r, date):
+    def __save_date(self, r, date):
 
-        file_path = self.build_directory()
+        file_path = self.__build_directory()
 
         open(f'{file_path}/{self.file_pattern}_{date}.{self.format}'.replace('"',''), 'wb').write(r.content)
 
@@ -45,7 +45,7 @@ class GetData:
             # to avoid blocking by multiple requests
             time.sleep(2)
 
-            url = self.build_url(date)
+            url = self.__build_url(date)
 
             try:
 
@@ -56,7 +56,7 @@ class GetData:
 
                     r = requests.get(url, allow_redirects=True)
 
-                    self.save_date(r, date)
+                    self.__save_date(r, date)
 
             except:
                 print("url doesn't exist")
