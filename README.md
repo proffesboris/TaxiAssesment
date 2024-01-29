@@ -1,8 +1,9 @@
 # How to run the application
 
-## You need an installed JVM in your environment
+###### Prerequisites
+###### You need an installed JVM in your environment for spark!!!
 
-## For mac/linux, you can choose one of option: 
+##### For mac/linux, you should choose one of option: 
 
 - Run with default date: 2023-01
 bash run_ingestion.sh
